@@ -1,0 +1,22 @@
+{
+  "name": "canvas-grid",
+  "version": "1.0.0",
+  "description": "canvas-grid",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wukung1010/canvas-grid.git"
+  },
+  "keywords": [
+    "grid"
+  ],
+  "author": "sunxianfeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wukung1010/canvas-grid/issues"
+  },
+  "homepage": "https://github.com/Wukung1010/canvas-grid#readme"
+}
