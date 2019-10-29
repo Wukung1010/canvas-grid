@@ -1,22 +1,22 @@
 {
   "name": "canvas-grid",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "canvas-grid",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Wukung1010/canvas-grid.git"
-  },
-  "keywords": [
-    "grid"
-  ],
-  "author": "sunxianfeng",
+  "keywords": [],
+  "author": "sun.xianfeng",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Wukung1010/canvas-grid/issues"
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^6.2.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.9.0"
   },
-  "homepage": "https://github.com/Wukung1010/canvas-grid#readme"
+  "dependencies": {
+    "typescript": "^3.6.4"
+  }
 }
