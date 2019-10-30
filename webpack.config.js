@@ -19,5 +19,8 @@ module.exports = {
     new HtmlWebpack({
       template: path.resolve(__dirname, 'index.html')
     })
-  ]
+  ],
+  devServer: {
+    port: 80
+  }
 }
