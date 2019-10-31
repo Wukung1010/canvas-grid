@@ -40,8 +40,24 @@
     grid
   </div>
   <script>
+    const gridData = {
+      options: {
+        showDefaultHead: true
+      },
+      rowCount: 5,
+      colCount: 7,
+      rows: 30,
+      cols: 80,
+      cells: [
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7]
+      ]
+    }
     window.onload = function() {
-      const grid = new Grid(document.getElementById('app'));
+      const grid = new Grid(document.getElementById('app'), gridData);
     }
   </script>
 </body>
