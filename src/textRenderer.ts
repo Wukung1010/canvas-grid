@@ -30,9 +30,11 @@ export default class TextRenderer {
   render(fontConfig: ITextConfig) {
     const ctx = this.ctx;
     const { x, y, width, height } = fontConfig;
-    ctx.save();
+    ctx.font = '80px 微软雅黑';
     ctx.textBaseline = 'middle';
+    ctx.textAlign = 'start';
+    ctx.fillStyle = '#000000';
     ctx.fillText(fontConfig.text, x, y + height/2, width);
-    ctx.restore();
+    console.log(ctx.measureText(fontConfig.text));
   }
 }
