@@ -4,7 +4,8 @@
   "description": "canvas-grid",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "service": "./node_modules/.bin/webpack-dev-server",
+    "dist": "./node_modules/.bin/webpack"
   },
   "keywords": [],
   "author": "sun.xianfeng",
