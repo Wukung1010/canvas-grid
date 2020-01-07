@@ -2,10 +2,9 @@ const presets = [
   [
     '@babel/env',
     {
-      targets: {
-        browsers: ['last 2 versions'],
-      },
-      useBuiltIns: 'usage',
+      targets: 'ie >= 9',
+      useBuiltIns: 'usage', // usage entry
+      corejs: 3,
     },
   ],
 ];

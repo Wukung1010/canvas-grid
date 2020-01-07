@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "demo": "webpack-dev-server",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,10 +20,12 @@
   },
   "homepage": "https://github.com/Wukung1010/canvas-grid#readme",
   "dependencies": {
+    "@babel/core": "^7.7.7",
+    "core-js": "^3.6.1",
+    "regenerator-runtime": "^0.13.3",
     "typescript": "^3.7.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
     "@typescript-eslint/eslint-plugin": "^2.13.0",
     "@typescript-eslint/parser": "^2.13.0",
@@ -31,6 +35,7 @@
     "eslint-plugin-import": "^2.19.1",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
   }
 }
