@@ -6,20 +6,68 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>XF Grid</title>
   <style>
+    html, body {
+      padding: 0;
+      margin: 0 auto;
+      height: 100%;
+      max-width: 1000px;
+    }
     #app {
       width: 800px;
       height: 700px;
       margin: auto;
     }
   </style>
+
 </head>
 <body>
   <h1>XF Grid</h1>
   <div id="app"></div>
   <script src="./bundle.js"></script>
   <script>
+    const data = {
+      cells: [
+        [
+          { showText: '单元格[0, 0]', editText: '', },
+          { showText: '单元格[0, 1]', editText: '', },
+          { showText: '单元格[0, 2]', editText: '', },
+          { showText: '单元格[0, 3]', editText: '', },
+          { showText: '单元格[0, 4]', editText: '', },
+        ],
+        [
+          { showText: '单元格【1, 0】', editText: '', },
+          { showText: '单元格【1, 1】', editText: '', },
+          { showText: '单元格【1, 2】', editText: '', },
+          { showText: '单元格【1, 3】', editText: '', },
+          { showText: '单元格【1, 4】', editText: '', },
+        ],
+        [
+          { showText: 'cell[2, 0]', editText: '', },
+          { showText: 'cell[2, 1]', editText: '', },
+          { showText: 'cell[2, 2]', editText: '', },
+          { showText: 'cell[2, 3]', editText: '', },
+          { showText: 'cell[2, 4]', editText: '', },
+        ],
+        [
+          { showText: 'Cell [3 - 0]', editText: '', },
+          { showText: 'Cell [3 - 1]', editText: '', },
+          { showText: 'Cell [3 - 2]', editText: '', },
+          { showText: 'Cell [3 - 3]', editText: '', },
+          { showText: 'Cell [3 - 4]', editText: '', },
+        ],
+        [
+          { showText: 'Cell { 4, 0 }', editText: '', },
+          { showText: 'Cell { 4, 1 }', editText: '', },
+          { showText: 'Cell { 4, 2 }', editText: '', },
+          { showText: 'Cell { 4, 3 }', editText: '', },
+          { showText: 'Cell { 4, 4 }', editText: '', },
+        ],
+      ],
+      rows: [25, 25, 25, 25, 25],
+      cols: [80, 80, 80, 80, 80],
+    }
     window.onload = function () {
-      
+      new Grid(document.getElementById('app'), data);
     }
   </script>
 </body>
