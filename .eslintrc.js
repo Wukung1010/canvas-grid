@@ -18,6 +18,17 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
   ],
-  rules: {
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   },
+  rules: {
+    "no-unused-vars": "off",
+    "import/extensions": "off",
+    "prefer-destructuring": "off",
+    "consistent-return": "off",
+    },
 };
