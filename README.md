@@ -1,5 +1,5 @@
 # canvas-grid
-no need description b
+use it! use it!! use it!!!
 
 ## running
 1. git clone
