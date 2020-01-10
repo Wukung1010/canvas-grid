@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>XF Grid</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Mock.js/1.0.0/mock-min.js"></script>
   <style>
     html, body {
       padding: 0;
@@ -18,54 +19,38 @@
       margin: auto;
     }
   </style>
-
 </head>
 <body>
   <h1>XF Grid</h1>
   <div id="app"></div>
   <script src="./bundle.js"></script>
   <script>
-    const data = {
-      cells: [
-        [
-          { showText: '单元格[0, 0]', editText: '单元格[0, 0]', },
-          { showText: '单元格[0, 1]', editText: '单元格[0, 1]', },
-          { showText: '单元格[0, 2]', editText: '单元格[0, 2]', },
-          { showText: '单元格[0, 3]', editText: '单元格[0, 3]', },
-          { showText: '单元格[0, 4]', editText: '单元格[0, 4]', },
-        ],
-        [
-          { showText: '单元格【1, 0】', editText: '单元格【1, 0】', },
-          { showText: '单元格【1, 1】', editText: '单元格【1, 1】', },
-          { showText: '单元格【1, 2】', editText: '单元格【1, 2】', },
-          { showText: '单元格【1, 3】', editText: '单元格【1, 3】', },
-          { showText: '单元格【1, 4】', editText: '单元格【1, 4】', },
-        ],
-        [
-          { showText: 'cell[2, 0]', editText: 'cell[2, 0]', },
-          { showText: 'cell[2, 1]', editText: 'cell[2, 1]', },
-          { showText: 'cell[2, 2]', editText: 'cell[2, 2]', font: { size: 18 } },
-          { showText: 'cell[2, 3]', editText: 'cell[2, 3]', },
-          { showText: 'cell[2, 4]', editText: 'cell[2, 4]', },
-        ],
-        [
-          { showText: 'Cell [3 - 0]', editText: 'Cell [3 - 0]', },
-          { showText: 'Cell [3 - 1]', editText: 'Cell [3 - 1]', },
-          { showText: 'Cell [3 - 2]', editText: 'Cell [3 - 2]', },
-          { showText: 'Cell [3 - 3]', editText: 'Cell [3 - 3]', },
-          { showText: 'Cell [3 - 4]', editText: 'Cell [3 - 4]', },
-        ],
-        [
-          { showText: 'Cell { 4, 0 }', editText: 'Cell { 4, 0 }', },
-          { showText: 'Cell { 4, 1 }', editText: 'Cell { 4, 1 }', },
-          { showText: 'Cell { 4, 2 }', editText: 'Cell { 4, 2 }', },
-          { showText: 'Cell { 4, 3 }', editText: 'Cell { 4, 3 }', },
-          { showText: 'Cell { 4, 4 }', editText: 'Cell { 4, 4 }', },
-        ],
-      ],
-      rows: [25, 35, 45, 25, 25],
-      cols: [80, 100, 180, 80, 200],
+    function getGridData(rowCount, colCount) {
+      const data = {
+        cells: [],
+        rows: [],
+        cols: [],
+      };
+      for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+        data.rows.push(Mock.Random.int(20, 100));
+        const rowCells = [];
+        for (let colIndex = 0; colIndex < colCount; colIndex += 1) {
+          if (colIndex === 0) {
+            data.cols.push(Mock.Random.int(80, 100));
+          }
+          const value = Mock.Random.word(3,10);
+          rowCells.push({
+            showText: value,
+            editText: value,
+          });
+        }
+        data.cells.push(rowCells);
+      }
+      return data;
     }
+  </script>
+  <script>
+    const data = getGridData(1000, 1000);
     window.onload = function () {
       new Grid(document.getElementById('app'), data);
     }
