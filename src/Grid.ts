@@ -1,6 +1,7 @@
 import DefaultConfig from './defaultConfig';
 import Select from './select';
 import Editor from './editor';
+import Util from './util';
 
 interface IGridData {
   options: {},
@@ -9,7 +10,7 @@ interface IGridData {
   cells: ICellConfig[][],
 }
 
-interface ICellConfig {
+export interface ICellConfig {
   showText: string,
   editText: string,
   border?: [number, number],
@@ -41,9 +42,9 @@ export default class Grid {
 
   private canvas!: HTMLCanvasElement;
 
-  private editor: Editor;
+  private editor!: Editor;
 
-  private select: Select;
+  private select!: Select;
 
   private scrollTop: number = 0;
 
@@ -58,21 +59,19 @@ export default class Grid {
     this.data = data;
     this.initEnv();
     this.render();
-    this.select = new Select(this.selfBox);
-    this.editor = new Editor(this.selfBox);
     this.registerListener();
   }
 
   initEnv() {
     this.selfBox = document.createElement('div');
-    this.selfBox.style.cssText = `position: relative; height: 100%; overflow: hidden;`;
+    this.selfBox.style.cssText = 'position: relative; height: 100%; overflow: hidden;';
     this.el.appendChild(this.selfBox);
 
     const scrollSize = 10;
     const boxWidth = this.selfBox.offsetWidth;
     const boxHeight = this.selfBox.offsetHeight;
-    const rowTotalSize = this.data.rows.reduce((size, value) => size += value, 0);
-    const colTotalSize = this.data.cols.reduce((size, value) => size += value, 0);
+    const rowTotalSize = this.data.rows.reduce((size, value) => size + value, 0);
+    const colTotalSize = this.data.cols.reduce((size, value) => size + value, 0);
     let hasXScrollBar = false;
     let hasYScrollBar = false;
 
@@ -91,8 +90,8 @@ export default class Grid {
     }
 
     // create layout
-    let canvasHeight = boxHeight - (hasYScrollBar ? scrollSize: 0);
-    let canvasWidth = boxWidth - (hasXScrollBar ? scrollSize: 0);
+    const canvasHeight = boxHeight - (hasYScrollBar ? scrollSize : 0);
+    const canvasWidth = boxWidth - (hasXScrollBar ? scrollSize : 0);
 
     // create canvas
     this.canvasBox = document.createElement('div');
@@ -103,6 +102,7 @@ export default class Grid {
       border: 1px solid ${DefaultConfig.defaultBorderColor[0]};
       width: ${canvasWidth}px;
       height: ${canvasHeight}px;
+      overflow: hidden;
     `;
     this.canvas = document.createElement('canvas');
     this.canvas.setAttribute('width', `${canvasWidth - 2}`);
@@ -126,6 +126,10 @@ export default class Grid {
       border-radius: 3px;
     `;
     if (hasYScrollBar) {
+      let YScrollMoving = false;
+      let offset = { top: 0, left: 0 };
+      let mouseOffsetY = 0;
+      let max = canvasHeight;
       const YScroll = document.createElement('div');
       YScroll.style.cssText = `
         ${scrollStyle}
@@ -137,16 +141,41 @@ export default class Grid {
       YScrollBlock.style.cssText = `
         ${scrollBlockStyle}
         width: ${scrollSize - 2}px;
-        height: ${Math.floor(canvasHeight * canvasHeight / colTotalSize)}px;
+        height: ${Math.floor((canvasHeight * canvasHeight) / rowTotalSize)}px;
       `;
+      YScrollBlock.addEventListener('mousedown', (event) => {
+        YScrollMoving = true;
+        mouseOffsetY = event.offsetY;
+        event.stopPropagation();
+        event.preventDefault();
+      });
+      document.body.addEventListener('mousemove', (event) => {
+        if (YScrollMoving) {
+          let top = event.y - offset.top - mouseOffsetY;
+          if (top < 0) {
+            top = 0;
+          } else if (top > max) {
+            top = max;
+          }
+          YScrollBlock.style.top = `${top}px`;
+        }
+      });
+      document.body.addEventListener('mouseup', (event) => {
+        YScrollMoving = false;
+        mouseOffsetY = 0;
+      });
       YScroll.appendChild(YScrollBlock);
       this.selfBox.appendChild(YScroll);
+      offset = Util.getElAbsoluteOffset(YScroll);
+      max -= YScrollBlock.offsetHeight;
     }
 
     // create X scroll
     if (hasXScrollBar) {
       let XScrollMoving = false;
       let offset = { top: 0, left: 0 };
+      let mouseOffsetX = 0;
+      let max = canvasWidth;
       const XScroll = document.createElement('div');
       XScroll.style.cssText = `
         ${scrollStyle}
@@ -157,27 +186,42 @@ export default class Grid {
       const XScrollBlock = document.createElement('div');
       XScrollBlock.style.cssText = `
         ${scrollBlockStyle}
-        width: ${Math.floor(canvasWidth * canvasWidth / rowTotalSize)}px;
+        width: ${Math.floor((canvasWidth * canvasWidth) / colTotalSize)}px;
         height: ${scrollSize - 2}px;
       `;
       XScrollBlock.addEventListener('mousedown', (event) => {
         XScrollMoving = true;
+        mouseOffsetX = event.offsetX;
+        event.stopPropagation();
+        event.preventDefault();
       });
       document.body.addEventListener('mousemove', (event) => {
         if (XScrollMoving) {
-          XScrollBlock.style.left = `${event.x - offset.left}px`;
+          let left = event.x - offset.left - mouseOffsetX;
+          if (left < 0) {
+            left = 0;
+          } else if (left > max) {
+            left = max;
+          }
+          XScrollBlock.style.left = `${left}px`;
         }
       });
-      XScrollBlock.addEventListener('mouseup', (event) => {
+      document.body.addEventListener('mouseup', (event) => {
         XScrollMoving = false;
+        mouseOffsetX = 0;
       });
       XScroll.appendChild(XScrollBlock);
       this.selfBox.appendChild(XScroll);
-      offset = getElAbsoluteOffset(XScroll);
+      offset = Util.getElAbsoluteOffset(XScroll);
+      max -= XScrollBlock.offsetWidth;
     }
 
     this.renderArea.width = this.canvas.offsetWidth;
     this.renderArea.height = this.canvas.offsetHeight;
+
+    this.select = new Select(this.canvasBox);
+    this.editor = new Editor(this.canvasBox);
+    Util.fitHighPixel(this.canvas);
   }
 
   render() {
@@ -198,9 +242,11 @@ export default class Grid {
           const width = this.data.cols[colIndex];
           this.renderCell(ctx, x, y, width, height, cellConfig);
           x += width;
+          return false;
         });
         y += height;
         x = 0;
+        return false;
       });
     }
   }
@@ -306,7 +352,7 @@ export default class Grid {
           cell.editText = value as string;
           this.render();
         }
-        this.select.move(bound);
+        this.select.move(bound, this.getCell(bound.colIndex, bound.rowIndex));
       }
     }, true);
 
@@ -332,28 +378,4 @@ export default class Grid {
       );
     }, true);
   }
-}
-
-function getTextSize(text: string, name: string, size: number) {
-  const span = document.createElement('span');
-  span.style.cssText = `display: inline-block; font-family: ${name}; font-size: ${size}px`;
-  span.innerText = text;
-  document.body.appendChild(span);
-  const bound = span.getBoundingClientRect();
-  document.body.removeChild(span);
-  return bound;
-}
-
-function getElAbsoluteOffset(el: HTMLElement) {
-  const offset = {
-    top: 0,
-    left: 0,
-  };
-  let target: HTMLElement | null = el;
-  while(target && target !== document.body) {
-    offset.top += target.offsetTop;
-    offset.left += target.offsetLeft;
-    target = target.parentElement;
-  }
-  return offset;
 }

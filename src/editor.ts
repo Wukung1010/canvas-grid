@@ -21,7 +21,7 @@ export default class Editor {
 
   createEditor() {
     this.editor = document.createElement('input');
-    this.editor.style.cssText = 'position: absolute; display: none; box-sizing: border-box; outline: none;';
+    this.editor.style.cssText = 'position: absolute; display: none; box-sizing: border-box; outline: none; border: 0px';
     (this.el as HTMLElement).appendChild(this.editor);
   }
 

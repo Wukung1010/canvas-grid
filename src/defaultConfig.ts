@@ -1,4 +1,4 @@
-const defaultBorder = [1, 1];
+const defaultBorder = [1, 1]; // [ YBorder, XBorder ]
 const defaultBorderColor = ['#17233d', '#17233d'];
 const defaultFont = {
   name: '微软雅黑',

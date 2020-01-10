@@ -11,6 +11,8 @@
       padding: 0;
       margin: 0 auto;
       height: 100%;
+    }
+    body {
       max-width: 1000px;
     }
     #app {
@@ -50,7 +52,7 @@
     }
   </script>
   <script>
-    const data = getGridData(1000, 1000);
+    const data = getGridData(20, 200);
     window.onload = function () {
       new Grid(document.getElementById('app'), data);
     }
