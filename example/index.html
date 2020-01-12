@@ -44,6 +44,13 @@
           rowCells.push({
             showText: value,
             editText: value,
+            font: {
+              color: Mock.Random.color(),
+              vertical: Mock.Random.int(0, 2),
+              horizontal: Mock.Random.int(0, 2),
+              isItalic: Mock.Random.int(0, 1),
+              isBold: Mock.Random.int(0, 1),
+            }
           });
         }
         data.cells.push(rowCells);

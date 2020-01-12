@@ -2,6 +2,7 @@ import DefaultConfig from './defaultConfig';
 import Select from './select';
 import Editor from './editor';
 import Util from './util';
+import TextRender from './render/textRender';
 
 interface IGridData {
   options: {},
@@ -15,11 +16,17 @@ export interface ICellConfig {
   editText: string,
   border?: [number, number],
   borderColor?: [string, string],
-  font?: {
-    name?: string,
-    size?: number,
-    color?: string,
-  },
+  font?: ICellFont,
+}
+
+export interface ICellFont {
+  name?: string,
+  size?: number,
+  color?: string,
+  isBold?: boolean,
+  isItalic?: boolean,
+  vertical?: number,
+  horizontal?: number,
 }
 
 export interface ICellBound {
@@ -283,14 +290,7 @@ export default class Grid {
     ctx.lineTo(x + width, moveY);
     ctx.stroke();
 
-    const name = config.font?.name || DefaultConfig.defaultFont.name;
-    const size = config.font?.size || DefaultConfig.defaultFont.size;
-    ctx.font = `${size}px ${name}`;
-    ctx.textBaseline = 'middle';
-    ctx.rect(x, y, width, height);
-    ctx.clip();
-    // const cssSize = this.getTextSize(config.showText, name, size);
-    ctx.fillText(config.showText, x, y + Math.ceil(height / 2));
+    TextRender.render(ctx, x, y, width - border[0], height - border[1], config.showText, config.font);
 
     ctx.restore();
   }
