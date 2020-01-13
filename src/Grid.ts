@@ -3,6 +3,7 @@ import Select from './select';
 import Editor from './editor';
 import Util from './util';
 import TextRender from './render/textRender';
+import BorderRender, { IBorderConfig } from './render/borderRender';
 
 interface IGridData {
   options: {},
@@ -14,8 +15,7 @@ interface IGridData {
 export interface ICellConfig {
   showText: string,
   editText: string,
-  border?: [number, number],
-  borderColor?: [string, string],
+  border?: IBorderConfig,
   font?: ICellFont,
 }
 
@@ -106,7 +106,7 @@ export default class Grid {
       position: relative;
       float: left;
       box-sizing: border-box;
-      border: 1px solid ${DefaultConfig.defaultBorderColor[0]};
+      border: 1px solid ${DefaultConfig.defaultBorder.color[0]};
       width: ${canvasWidth}px;
       height: ${canvasHeight}px;
       overflow: hidden;
@@ -124,6 +124,7 @@ export default class Grid {
       border: 1px solid #d8d8d8;
       box-sizing: border-box;
       border-radius: 3px;
+      overflow: hidden;
     `;
     const scrollBlockStyle = `
       position: relative;
@@ -145,10 +146,11 @@ export default class Grid {
         height: ${canvasHeight}px;
       `;
       const YScrollBlock = document.createElement('div');
+      const blockPer = canvasHeight / rowTotalSize;
       YScrollBlock.style.cssText = `
         ${scrollBlockStyle}
         width: ${scrollSize - 2}px;
-        height: ${Math.floor((canvasHeight * canvasHeight) / rowTotalSize)}px;
+        height: ${Math.floor(canvasHeight * blockPer)}px;
       `;
       YScrollBlock.addEventListener('mousedown', (event) => {
         YScrollMoving = true;
@@ -165,6 +167,9 @@ export default class Grid {
             top = max;
           }
           YScrollBlock.style.top = `${top}px`;
+          this.scrollTop = top / blockPer;
+          this.render();
+          this.select.scrollRelocation(this.scrollLeft, this.scrollTop);
         }
       });
       document.body.addEventListener('mouseup', (event) => {
@@ -191,9 +196,10 @@ export default class Grid {
         height: ${scrollSize}px;
       `;
       const XScrollBlock = document.createElement('div');
+      const blockPer = canvasWidth / colTotalSize;
       XScrollBlock.style.cssText = `
         ${scrollBlockStyle}
-        width: ${Math.floor((canvasWidth * canvasWidth) / colTotalSize)}px;
+        width: ${Math.floor(canvasWidth * blockPer)}px;
         height: ${scrollSize - 2}px;
       `;
       XScrollBlock.addEventListener('mousedown', (event) => {
@@ -211,6 +217,9 @@ export default class Grid {
             left = max;
           }
           XScrollBlock.style.left = `${left}px`;
+          this.scrollLeft = left / blockPer;
+          this.render();
+          this.select.scrollRelocation(this.scrollLeft, this.scrollTop);
         }
       });
       document.body.addEventListener('mouseup', (event) => {
@@ -235,26 +244,37 @@ export default class Grid {
     // render data
     const ctx = this.canvas.getContext('2d');
     if (ctx) {
-      let x: number = 0;
-      let y: number = 0;
-      this.data.cells.some((row, rowIndex) => {
-        if (this.renderArea.height < y) {
-          return true;
+      let x: number = -this.scrollLeft;
+      let y: number = -this.scrollTop;
+      let beginRow = 0;
+      let beginCol = 0;
+      while(x + this.data.cols[beginCol] < 0) {
+        x += this.data.cols[beginCol];
+        beginCol += 1;
+      }
+      while(y + this.data.rows[beginRow] < 0) {
+        y += this.data.rows[beginRow];
+        beginRow += 1;
+      }
+      let currentX = x;
+      let currentY = y;
+      for (let rowIndex = beginRow;; rowIndex += 1) {
+        if (this.renderArea.height < currentY) {
+          break;
         }
         const height = this.data.rows[rowIndex];
-        row.some((cellConfig, colIndex) => {
-          if (this.renderArea.width < x) {
-            return true;
+        for (let colIndex = beginCol;; colIndex += 1) {
+          if (this.renderArea.width < currentX) {
+            break;
           }
+          const cellConfig = this.data.cells[rowIndex][colIndex];
           const width = this.data.cols[colIndex];
-          this.renderCell(ctx, x, y, width, height, cellConfig);
-          x += width;
-          return false;
-        });
-        y += height;
-        x = 0;
-        return false;
-      });
+          this.renderCell(ctx, currentX, currentY, width, height, cellConfig);
+          currentX += width;
+        }
+        currentY += height;
+        currentX = x;
+      }
     }
   }
 
@@ -271,26 +291,8 @@ export default class Grid {
 
     ctx.clearRect(x, y, width, height);
 
-    // render border
-    const border = config.border || DefaultConfig.defaultBorder;
-    const borderColor = config.borderColor || DefaultConfig.defaultBorderColor;
-    ctx.lineWidth = border[0];
-    ctx.strokeStyle = borderColor[0];
-    ctx.beginPath();
-    const moveX = x + width - ctx.lineWidth / 2;
-    ctx.moveTo(moveX, y);
-    ctx.lineTo(moveX, y + height);
-    ctx.stroke();
-
-    ctx.lineWidth = border[1];
-    ctx.strokeStyle = borderColor[1];
-    ctx.beginPath();
-    const moveY = y + height - ctx.lineWidth / 2;
-    ctx.moveTo(x, moveY);
-    ctx.lineTo(x + width, moveY);
-    ctx.stroke();
-
-    TextRender.render(ctx, x, y, width - border[0], height - border[1], config.showText, config.font);
+    BorderRender.render(ctx, x, y, width, height, config.border);
+    TextRender.render(ctx, x, y, width, height, config.showText, config.font);
 
     ctx.restore();
   }
@@ -352,7 +354,7 @@ export default class Grid {
           cell.editText = value as string;
           this.render();
         }
-        this.select.move(bound, this.getCell(bound.colIndex, bound.rowIndex));
+        this.select.move(bound, this.getCell(bound.colIndex, bound.rowIndex), this.scrollLeft, this.scrollTop);
       }
     }, true);
 

@@ -1,5 +1,9 @@
-const defaultBorder = [1, 1]; // [ YBorder 右边框, XBorder 左边框 ]
-const defaultBorderColor = ['#17233d', '#17233d'];
+const defaultBorder = {
+  size: [1, 1],  // [ YBorder 右边框, XBorder 左边框 ]
+  style: [1, 1],
+  color: ['#17233d', '#17233d'],
+}; 
+
 const defaultFont = {
   name: '微软雅黑',
   size: 12,
@@ -12,6 +16,5 @@ const defaultFont = {
 
 export default {
   defaultBorder,
-  defaultBorderColor,
   defaultFont,
 };

@@ -10,6 +10,12 @@ export default class Select {
 
   private borderColor: string = '#19be6b';
 
+  private boundCache?: ICellBound;
+
+  private scrollXCache: number = 0;
+  
+  private scrollYCache: number = 0;
+
   constructor(el: HTMLElement) {
     this.el = el;
     this.createSelectBox();
@@ -27,14 +33,26 @@ export default class Select {
     (this.el as HTMLElement).appendChild(this.box);
   }
 
-  move(bound: ICellBound, cellConfig: ICellConfig) {
+  move(bound: ICellBound, cellConfig: ICellConfig, scrollX: number, scrollY: number) {
     if (this.box) {
-      const border = cellConfig?.border ?? DefaultConfig.defaultBorder;
+      this.scrollXCache = scrollX;
+      this.scrollYCache = scrollY;
+      this.boundCache = bound;
+      const border = cellConfig.border;
       this.box.style.display = 'block';
       this.box.style.top = `${bound.y - this.borderSize}px`;
       this.box.style.left = `${bound.x - this.borderSize}px`;
-      this.box.style.width = `${bound.width - border[0]}px`;
-      this.box.style.height = `${bound.height - border[1]}px`;
+      this.box.style.width = `${bound.width - (border?.size?.[0] ?? DefaultConfig.defaultBorder.size[0])}px`;
+      this.box.style.height = `${bound.height - (border?.size?.[1] ?? DefaultConfig.defaultBorder.size[1])}px`;
+    }
+  }
+
+  scrollRelocation(scrollX: number, scrollY: number) {
+    if (this.box) {
+      const diffX = scrollX - this.scrollXCache;
+      const diffY = scrollY - this.scrollYCache;
+      this.box.style.left = `${(this.boundCache as ICellBound).x - diffX}px`
+      this.box.style.left = `${(this.boundCache as ICellBound).y - diffY}px`
     }
   }
 
@@ -48,6 +66,9 @@ export default class Select {
     if (this.el && this.box) {
       this.el.removeChild(this.box);
       this.el = undefined;
+      this.scrollXCache = 0;
+      this.scrollYCache = 0;
+      this.boundCache = undefined;
     }
   }
 }

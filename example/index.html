@@ -50,7 +50,12 @@
               horizontal: Mock.Random.int(0, 2),
               isItalic: Mock.Random.int(0, 1),
               isBold: Mock.Random.int(0, 1),
-            }
+            },
+            border: {
+              size: [Mock.Random.int(0, 3), Mock.Random.int(0, 3)],
+              color: [Mock.Random.color(), Mock.Random.color()],
+              style: [Mock.Random.int(0, 2), Mock.Random.int(0, 2)],
+            },
           });
         }
         data.cells.push(rowCells);
@@ -59,7 +64,7 @@
     }
   </script>
   <script>
-    const data = getGridData(20, 200);
+    const data = getGridData(100, 100);
     window.onload = function () {
       new Grid(document.getElementById('app'), data);
     }

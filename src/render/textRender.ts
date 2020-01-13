@@ -57,7 +57,7 @@ const TextRender = {
     ctx.rect(x, y, width, height);
     ctx.clip();
     ctx.fillText(text, renderX, renderY, width);
-  }
-}
+  },
+};
 
 export default TextRender;
