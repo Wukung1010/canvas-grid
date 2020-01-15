@@ -25,6 +25,8 @@ export interface ICellFont {
   color?: string,
   isBold?: boolean,
   isItalic?: boolean,
+  isFitSize?: boolean,
+  isWrapLine?: boolean,
   vertical?: number,
   horizontal?: number,
 }
@@ -248,22 +250,22 @@ export default class Grid {
       let y: number = -this.scrollTop;
       let beginRow = 0;
       let beginCol = 0;
-      while(x + this.data.cols[beginCol] < 0) {
+      while (x + this.data.cols[beginCol] < 0) {
         x += this.data.cols[beginCol];
         beginCol += 1;
       }
-      while(y + this.data.rows[beginRow] < 0) {
+      while (y + this.data.rows[beginRow] < 0) {
         y += this.data.rows[beginRow];
         beginRow += 1;
       }
       let currentX = x;
       let currentY = y;
-      for (let rowIndex = beginRow;; rowIndex += 1) {
+      for (let rowIndex = beginRow; rowIndex < this.data.rows.length; rowIndex += 1) {
         if (this.renderArea.height < currentY) {
           break;
         }
         const height = this.data.rows[rowIndex];
-        for (let colIndex = beginCol;; colIndex += 1) {
+        for (let colIndex = beginCol; colIndex < this.data.cols.length; colIndex += 1) {
           if (this.renderArea.width < currentX) {
             break;
           }
@@ -297,7 +299,7 @@ export default class Grid {
     ctx.restore();
   }
 
-  getCellBound(offsetX: number, offsetY: number): ICellBound {
+  getCellBound(offsetX: number, offsetY: number): ICellBound | undefined {
     const bound = {
       rowIndex: 0,
       colIndex: 0,
@@ -308,7 +310,7 @@ export default class Grid {
     };
 
     const absoluteX = offsetX + this.scrollLeft;
-    this.data.cols.some((col, colIndex) => {
+    const validX = this.data.cols.some((col, colIndex) => {
       if (bound.x <= absoluteX && bound.x + col >= absoluteX) {
         bound.width = col;
         bound.colIndex = colIndex;
@@ -318,9 +320,12 @@ export default class Grid {
       return false;
     });
     bound.x -= this.scrollLeft;
+    if (!validX) {
+      return;
+    }
 
     const absoluteY = offsetY + this.scrollTop;
-    this.data.rows.some((row, rowIndex) => {
+    const validY = this.data.rows.some((row, rowIndex) => {
       if (bound.y <= absoluteY && bound.y + row >= absoluteY) {
         bound.height = row;
         bound.rowIndex = rowIndex;
@@ -330,6 +335,9 @@ export default class Grid {
       return false;
     });
     bound.y -= this.scrollTop;
+    if (!validY) {
+      return;
+    }
 
     return bound;
   }
@@ -342,7 +350,6 @@ export default class Grid {
     this.selfBox.addEventListener('mousedown', (event) => {
       if (event.target === this.canvas) {
         const { offsetX, offsetY } = event;
-        const bound = this.getCellBound(offsetX, offsetY);
         if (this.editor.isEditing()) {
           const editorBound = this.editor.getEditorBound();
           const value = this.editor.close();
@@ -354,7 +361,15 @@ export default class Grid {
           cell.editText = value as string;
           this.render();
         }
-        this.select.move(bound, this.getCell(bound.colIndex, bound.rowIndex), this.scrollLeft, this.scrollTop);
+        const bound = this.getCellBound(offsetX, offsetY);
+        if (bound) {
+          this.select.move(
+            bound,
+            this.getCell(bound.colIndex, bound.rowIndex),
+            this.scrollLeft,
+            this.scrollTop,
+          );
+        }
       }
     }, true);
 
@@ -371,13 +386,15 @@ export default class Grid {
     this.selfBox.addEventListener('dblclick', (event) => {
       const { offsetX, offsetY } = event;
       const bound = this.getCellBound(offsetX, offsetY);
-      const cell = this.getCell(bound.colIndex, bound.rowIndex);
-      this.editor.open(
-        bound,
-        cell.editText,
-        cell.font?.name || DefaultConfig.defaultFont.name,
-        cell.font?.size || DefaultConfig.defaultFont.size,
-      );
+      if (bound) {
+        const cell = this.getCell(bound.colIndex, bound.rowIndex);
+        this.editor.open(
+          bound,
+          cell.editText,
+          cell.font?.name || DefaultConfig.defaultFont.name,
+          cell.font?.size || DefaultConfig.defaultFont.size,
+        );
+      }
     }, true);
   }
 }

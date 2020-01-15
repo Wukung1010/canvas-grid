@@ -8,12 +8,12 @@ export default class Select {
 
   private borderSize: number = 2;
 
-  private borderColor: string = '#19be6b';
+  private borderColor: string = '#17A1CA';
 
   private boundCache?: ICellBound;
 
   private scrollXCache: number = 0;
-  
+
   private scrollYCache: number = 0;
 
   constructor(el: HTMLElement) {
@@ -26,7 +26,6 @@ export default class Select {
     this.box.style.cssText = `
       position: absolute;
       display: none;
-      transition: all .3s;
       background: rgba(255, 255, 255, 0);
       border: ${this.borderSize}px solid ${this.borderColor};
       pointer-events: none;`;
@@ -35,6 +34,7 @@ export default class Select {
 
   move(bound: ICellBound, cellConfig: ICellConfig, scrollX: number, scrollY: number) {
     if (this.box) {
+      this.box.style.transition = 'all .3s';
       this.scrollXCache = scrollX;
       this.scrollYCache = scrollY;
       this.boundCache = bound;
@@ -48,11 +48,12 @@ export default class Select {
   }
 
   scrollRelocation(scrollX: number, scrollY: number) {
-    if (this.box) {
+    if (this.box && this.box.style.display === 'block') {
+      this.box.style.transition = 'none';
       const diffX = scrollX - this.scrollXCache;
       const diffY = scrollY - this.scrollYCache;
-      this.box.style.left = `${(this.boundCache as ICellBound).x - diffX}px`
-      this.box.style.left = `${(this.boundCache as ICellBound).y - diffY}px`
+      this.box.style.left = `${(this.boundCache as ICellBound).x - this.borderSize - diffX}px`;
+      this.box.style.top = `${(this.boundCache as ICellBound).y - this.borderSize - diffY}px`;
     }
   }
 

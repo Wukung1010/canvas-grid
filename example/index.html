@@ -9,11 +9,11 @@
   <style>
     html, body {
       padding: 0;
-      margin: 0 auto;
-      height: 100%;
+      margin: 0;
     }
-    body {
+    .contant {
       max-width: 1000px;
+      margin: 0 auto;
     }
     #app {
       width: 800px;
@@ -23,8 +23,10 @@
   </style>
 </head>
 <body>
-  <h1>XF Grid</h1>
-  <div id="app"></div>
+  <div class="contant">
+    <h1>XF Grid</h1>
+    <div id="app"></div>
+  </div>
   <script src="./bundle.js"></script>
   <script>
     function getGridData(rowCount, colCount) {
@@ -40,11 +42,12 @@
           if (colIndex === 0) {
             data.cols.push(Mock.Random.int(80, 100));
           }
-          const value = Mock.Random.word(3,10);
+          const value = Mock.Random.word(1,5);
           rowCells.push({
             showText: value,
             editText: value,
             font: {
+              size: Mock.Random.int(12, 25),
               color: Mock.Random.color(),
               vertical: Mock.Random.int(0, 2),
               horizontal: Mock.Random.int(0, 2),
@@ -64,7 +67,23 @@
     }
   </script>
   <script>
-    const data = getGridData(100, 100);
+    // const data = getGridData(1, 1);
+    const data = {
+      rows: [100],
+      cols: [300],
+      cells: [
+        [
+          {
+            showText: '哦啊司机都I解耦I就爱送道具啊哦司机都',
+            editText: '哦啊司机都I解耦I就爱送道具啊哦司机都',
+            font: {
+              size: 25,
+              isWrapLine: true,
+            },
+          }
+        ]
+      ]
+    }
     window.onload = function () {
       new Grid(document.getElementById('app'), data);
     }
