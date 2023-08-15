@@ -20,23 +20,9 @@
     "url": "https://github.com/Wukung1010/canvas-grid/issues"
   },
   "homepage": "https://github.com/Wukung1010/canvas-grid#readme",
-  "dependencies": {
-    "@babel/core": "^7.7.7",
-    "core-js": "^3.6.1",
-    "regenerator-runtime": "^0.13.3",
-    "typescript": "^3.7.5"
-  },
   "devDependencies": {
-    "@babel/preset-env": "^7.7.7",
-    "@typescript-eslint/eslint-plugin": "^2.13.0",
-    "@typescript-eslint/parser": "^2.13.0",
-    "babel-loader": "^8.0.6",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.19.1",
-    "ts-loader": "^6.2.1",
-    "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1"
+    "eslint": "^8.47.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9"
   }
 }
